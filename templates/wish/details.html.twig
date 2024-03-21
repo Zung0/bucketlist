@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Détails
+
+{% endblock %}
+
+{% block body %}
+    <p>Détail d'un souhait</p>
+    <p>Identifiant numérique du souhait: {{ id }}</p>
+    <p>{{ wish.description|nl2br }}</p>
+    <!--le pipe nl2br permet d'avpir les saut de ligne que l'utilisateur avait rentré-->
+    <p>{{ wish.dateCreated|date('D d/m/Y H:i') }}</p>
+    <p>{{ wish.author }}</p>
+
+{% endblock %}
