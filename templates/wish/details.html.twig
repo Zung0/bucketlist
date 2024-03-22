@@ -11,6 +11,11 @@
     <!--le pipe nl2br permet d'avpir les saut de ligne que l'utilisateur avait rentré-->
     <p>{{ wish.dateCreated|date('D d/m/Y H:i') }}</p>
     <p>{{ wish.author }}</p>
+    {% if wish.dateUpdated is not null %}
+    <p>Date de la dernière modification : {{ wish.dateUpdated|date('D d/m/Y H:i') }}</p>
+{% endif %}
+    <a href="{{ path('app_remove',{'id': wish.id}) }}"><input type="button" value="Delete"></a>
 
+    <a href="{{ path('app_create_id',{'id':wish.id}) }}"><input type="button" value="Modify"></a>
 
 {% endblock %}
