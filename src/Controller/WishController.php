@@ -85,7 +85,7 @@ class WishController extends AbstractController
             $em->persist($wish);
             $em->flush();
             //dd($wish);
-            $this->addFlash('success', 'Enregistrement réussi !');
+            $this->addFlash('success', 'Modification réussi !');
 
             return $this->redirectToRoute('app_detail', ['id' => $wish->getId()]);
         }
