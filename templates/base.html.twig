@@ -20,8 +20,14 @@
             <li><a href="{{ path('app_main') }}">Home</a></li>
             <li><a href="{{ path('app_wish') }}">List</a></li>
             <li><a href="{{ path('app_about') }}">About</a></li>
+            <li><a href="{{ path('app_create') }}">Create</a></li>
         </ul>
     </nav>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
 </header>
 
 {% block body %}{% endblock %}
