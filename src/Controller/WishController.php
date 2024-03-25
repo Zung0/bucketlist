@@ -7,10 +7,12 @@ use App\Form\CreateType;
 use App\Repository\WishRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Date;
 
 class WishController extends AbstractController
@@ -51,15 +53,21 @@ class WishController extends AbstractController
     }
 
     #[Route('/create', name: 'app_create')]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $wish = new Wish();
         $form = $this->createForm(CreateType::class, $wish);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form ->isValid()) {
 
+            if($form->get('image_file')->getData()instanceof UploadedFile){
+                $imageFile = $form->get('image_file')->getData();
+                $fileName = $slugger->slug($wish->getName()).'-'.uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move('images', $fileName);
+                $wish->setImage($fileName);
+            }
             $em->persist($wish);
             $em->flush();
             //dd($wish);
@@ -71,17 +79,27 @@ class WishController extends AbstractController
             'createForm' => $form
         ]);
     }
-    #[Route('/create/{id}', name: 'app_create_id')]
-    public function createById(Request $request, EntityManagerInterface $em, Wish $wish): Response
+
+    #[Route('/create/{id}', name: 'app_create_id', requirements: ['id' => '\d+' ])]
+    public function createById(Request $request, EntityManagerInterface $em, Wish $wish, SluggerInterface $slugger): Response
     {
 
-        $form = $this->createForm(CreateType::class, $wish)
-                ->setData($wish);
+        $form = $this->createForm(CreateType::class, $wish);
+          //  ->setData($wish) inutile étant donné que tu donnes déjà $wish dans createForm.
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            $wish->setDateUpdated(new \DateTime());
+        if ($form->isSubmitted()&& $form ->isValid()) {
+            if($form->get('image_file')->getData()instanceof UploadedFile){
+                $imageFile = $form->get('image_file')->getData();
+                $fileName = $slugger->slug($wish->getName()).'-'.uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move('images', $fileName);
+                if($wish->getImage()&& file_exists('images'.$wish->getImage())){
+                    //unlink permet de détruire le fichier initial.
+                    unlink('images'.$wish->getImage());
+                }
+                $wish->setImage($fileName);
+            }
             $em->persist($wish);
             $em->flush();
             //dd($wish);
@@ -97,7 +115,6 @@ class WishController extends AbstractController
     #[Route('/remove/{id}', name: 'app_remove', requirements: ['id' => '\d+'])]
     public function removeWish(Wish $wish, EntityManagerInterface $em): Response
     {
-
         $em->remove($wish);
         $em->flush();
         $this->addFlash('success', 'Delete réussi !');

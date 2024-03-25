@@ -5,9 +5,12 @@ namespace App\Entity;
 use App\Repository\WishRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use http\Message;
+use Symfony\Component\Validator\Constraints as Assert;
 use function Symfony\Component\Clock\now;
 
 #[ORM\Entity(repositoryClass: WishRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 class Wish
 {
     #[ORM\Id]
@@ -16,12 +19,16 @@ class Wish
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Assert\NotBlank(Message:('Vous devez remplir ce champ !'))]
+    #[Assert\Length(min: 5, minMessage: 'Le nom doit avoir au moins 5 charactères !')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\Assert\NotBlank(Message:('Vous devez remplir ce champ !'))]
+    #[Assert\Length(min: 3, minMessage: 'Le nom doit avoir au moins 3 charactères !')]
     private ?string $author = null;
 
     #[ORM\Column]
@@ -30,15 +37,12 @@ class Wish
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateCreated = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateUpdated = null;
 
-    public function __construct(){
-        $this->dateCreated= new \DateTime();
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
-
-
-    }
 
 
 
@@ -100,21 +104,31 @@ class Wish
         return $this->dateCreated;
     }
 
-    public function setDateCreated(\DateTimeInterface $dateCreated): static
+    #[ORM\PrePersist()]
+    public function setDateCreated(): \DateTime
     {
-        $this->dateCreated = $dateCreated;
-
-        return $this;
+        return $this->dateCreated = new \DateTime();
     }
 
     public function getDateUpdated(): ?\DateTimeInterface
     {
         return $this->dateUpdated;
     }
-
-    public function setDateUpdated(\DateTimeInterface $dateUpdated): static
+    #[ORM\PreUpdate()]
+    public function setDateUpdated():  static
     {
-        $this->dateUpdated = $dateUpdated;
+         $this->dateUpdated = new \DateTime();
+         return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
