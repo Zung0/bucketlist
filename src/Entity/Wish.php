@@ -132,4 +132,15 @@ class Wish
 
         return $this;
     }
+    #[ORM\PreRemove]
+    public function deleteImage(): static
+    {
+        if($this->getImage()&& file_exists('images'.$this->getImage()))
+        {
+            //unlink permet de détruire le fichier initial.
+            unlink('images'.$this->getImage());
+
+        }
+    return $this;
+    }
 }
