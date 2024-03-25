@@ -91,7 +91,7 @@ class WishController extends AbstractController
 
         if ($form->isSubmitted()&& $form ->isValid()) {
 
-            if ($form->get('delete_image')->getData()){
+            if ($form->has('delete_image')&&$form->get('delete_image')->getData()){
               $wish->deleteImage();
               $wish->setImage(null);
           }
