@@ -10,11 +10,17 @@
     <p>{{ wish.description|nl2br }}</p>
     <!--le pipe nl2br permet d'avpir les saut de ligne que l'utilisateur avait rentré-->
     <p>{{ wish.dateCreated|date('D d/m/Y H:i') }}</p>
-    <img src="{{ asset('images/' ~ wish.image) }}" alt="Image">
+
+    {% if wish.image is not empty %}
+        <img src="{{ asset('images/' ~ wish.image) }}" alt="Image">
+    {% endif %}
+
     <p>{{ wish.author }}</p>
+
     {% if wish.dateUpdated is not null %}
-    <p>Date de la dernière modification : {{ wish.dateUpdated|date('D d/m/Y H:i') }}</p>
-{% endif %}
+        <p>Date de la dernière modification : {{ wish.dateUpdated|date('D d/m/Y H:i') }}</p>
+    {% endif %}
+
     <a href="{{ path('app_remove',{'id': wish.id}) }}"><input type="button" value="Delete" class="btn btn-danger" onclick="return('Etes-vous sur de supprimer ?')"></a>
 
     <a href="{{ path('app_create_id',{'id':wish.id}) }}"><input type="button" value="Modify" class="btn btn-primary"></a>

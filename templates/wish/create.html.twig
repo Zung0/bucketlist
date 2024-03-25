@@ -13,4 +13,7 @@
 
     {{ form(createForm) }}
 
+    {% if wish is defined and wish.image is not empty %}
+    <img src="{{ asset('images/'~ wish.image) }}" alt="Une image">%}
+    {% endif %}
 {% endblock %}

@@ -90,10 +90,17 @@ class WishController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()&& $form ->isValid()) {
+
+            if ($form->get('delete_image')->getData()){
+              $wish->deleteImage();
+              $wish->setImage(null);
+          }
+
             if($form->get('image_file')->getData()instanceof UploadedFile){
                 $imageFile = $form->get('image_file')->getData();
                 $fileName = $slugger->slug($wish->getName()).'-'.uniqid().'.'.$imageFile->guessExtension();
                 $imageFile->move('images', $fileName);
+
                 if($wish->getImage()&& file_exists('images'.$wish->getImage())){
                     //unlink permet de détruire le fichier initial.
                     unlink('images'.$wish->getImage());
