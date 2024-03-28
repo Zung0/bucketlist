@@ -16,6 +16,7 @@
     {% endif %}
 
     <p>{{ wish.author }}</p>
+    <p>{{ wish.categorie.name }}</p>
 
     {% if wish.dateUpdated is not null %}
         <p>Date de la dernière modification : {{ wish.dateUpdated|date('D d/m/Y H:i') }}</p>
