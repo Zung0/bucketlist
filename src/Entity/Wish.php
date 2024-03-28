@@ -44,7 +44,6 @@ class Wish
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'wishes')]
-    #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     private ?Categorie $categorie = null;
 

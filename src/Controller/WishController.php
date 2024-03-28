@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Wish;
 use App\Form\CreateType;
+use App\Helper\Censurator;
 use App\Repository\WishRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,7 +54,7 @@ class WishController extends AbstractController
     }
 
     #[Route('/create', name: 'app_create')]
-    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, Censurator $censurator): Response
     {
         $wish = new Wish();
         $form = $this->createForm(CreateType::class, $wish);
@@ -68,9 +69,12 @@ class WishController extends AbstractController
                 $imageFile->move('images', $fileName);
                 $wish->setImage($fileName);
             }
+           // dd($wish);
+            $wish->setDescription($censurator->purify($wish->getDescription()));
+            $wish->setUser($this->getUser());
             $em->persist($wish);
             $em->flush();
-            //dd($wish);
+
             $this->addFlash('success', 'Enregistrement réussi !');
 
             return $this->redirectToRoute('app_detail', ['id' => $wish->getId()]);
@@ -81,7 +85,7 @@ class WishController extends AbstractController
     }
 
     #[Route('/create/{id}', name: 'app_create_id', requirements: ['id' => '\d+' ])]
-    public function createById(Request $request, EntityManagerInterface $em, Wish $wish, SluggerInterface $slugger): Response
+    public function createById(Request $request, EntityManagerInterface $em, Wish $wish, SluggerInterface $slugger, Censurator $censurator ): Response
     {
 
         $form = $this->createForm(CreateType::class, $wish);
@@ -107,6 +111,8 @@ class WishController extends AbstractController
                 }
                 $wish->setImage($fileName);
             }
+            $censurator->purify($wish->getDescription());
+            $wish->setUser($this->getUser());
             $em->persist($wish);
             $em->flush();
             //dd($wish);

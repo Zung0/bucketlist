@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Categorie;
 use App\Entity\Wish;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,14 +28,10 @@ class CreateType extends AbstractType
                 'required' => false
 
             ])
-            ->add('categorie', ChoiceType::class, [
-                'choices' => [
-                    'Sport' => 'Sport',
-                    'Travel & Adventure' => 'Travel & Adventure',
-                    'Entertainement' => 'Entertainement',
-                    'Human relations' => 'Human relations',
-                    'Other' => 'Other',
-                ]
+            ->add('categorie', EntityType::class, [
+                'class' => Categorie::class,
+                'choice_label' => 'name',
+
             ])
             ->add('author')
             ->add('isPublished')
